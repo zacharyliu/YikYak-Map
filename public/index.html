@@ -23,40 +23,79 @@
                     mapOptions);
         }
 
+        function deltaToMeters(delta, latitude) {
+            // adapted from http://www.movable-type.co.uk/scripts/latlong.html
+
+            var R = 6371; // km
+            var φ1 = latitude * Math.PI / 180;
+            var φ2 = φ1;
+            var Δφ = 0;
+            var Δλ = (delta) * Math.PI / 180;
+
+            var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            var d = R * c;
+
+            return d * 1000;
+        }
+
         function refresh() {
             var url = (lastUpdated == -1) ? '/api/all' : '/api/new?since=' + lastUpdated;
             $.getJSON(url, function(messages) {
                 for (var i=0; i<messages.length; i++) {
-
                     if (messages[i].messageID in markers) {
 //                        console.log("moving " + messages[i].messageID);
-                        var marker = markers[messages[i].messageID];
+                        var marker = markers[messages[i].messageID].marker;
+                        var circle = markers[messages[i].messageID].circle;
                         var originalLatitude = marker.getPosition().lat();
                         var originalLongitude = marker.getPosition().lng();
-
+                        var originalRadius = circle.getRadius();
 
                         $({
                             latitude: originalLatitude,
                             longitude: originalLongitude,
-                            marker: marker
+                            radius: originalRadius,
+                            marker: marker,
+                            circle: circle,
+                            animateCircle: (originalRadius != 0)
                         }).animate({
                             latitude: messages[i].loc[1],
-                            longitude: messages[i].loc[0]
+                            longitude: messages[i].loc[0],
+                            radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance)
                         }, {
                             duration: 1000,
                             easing: 'linear',
                             step: function() {
                                 var myLatlng = new google.maps.LatLng(this.latitude, this.longitude);
                                 this.marker.setPosition(myLatlng);
+                                if (this.animateCircle) {
+                                    this.circle.setCenter(myLatlng);
+                                    this.circle.setRadius(this.radius);
+                                }
                             }
                         });
                     } else {
                         var myLatlng = new google.maps.LatLng(messages[i].loc[1], messages[i].loc[0]);
-                        markers[messages[i].messageID] = new google.maps.Marker({
-                            position: myLatlng,
-                            map: map,
-                            title: messages[i].message
-                        });
+                        markers[messages[i].messageID] = {
+                            marker: new google.maps.Marker({
+                                position: myLatlng,
+                                map: map,
+                                title: messages[i].message
+                            }),
+                            circle: new google.maps.Circle({
+                                strokeColor: '#FF0000',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: '#FF0000',
+                                fillOpacity: 0.35,
+                                map: map,
+                                center: myLatlng,
+                                radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance)
+                            })
+                        };
                     }
                 }
             });
