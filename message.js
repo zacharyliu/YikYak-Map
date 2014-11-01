@@ -11,7 +11,7 @@ var messageSchema = new mongoose.Schema({
     numberOfLikes: Number
 });
 
-var EMA_THRESHOLD = 1;
+var EMA_THRESHOLD = 0.995;
 
 messageSchema.statics.addOrUpdate = function(data, callback) {
     var _this = this;

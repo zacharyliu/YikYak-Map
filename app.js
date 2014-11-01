@@ -143,7 +143,7 @@ function refresh() {
     }, function(err) {
         setTimeout(function() {
             refresh();
-        }, 1000);
+        }, 100);
     });
 }
 
