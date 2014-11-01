@@ -29,7 +29,7 @@ messageSchema.statics.addOrUpdate = function(data, callback) {
             callback(err);
         } else if (result) {
             if (result.loc_found) {
-                callback(err, result, true);
+                callback(err, result, {isNew: false, isUpdated: false});
             } else {
                 // Kalman filtering http://bilgin.esme.org/BitsBytes/KalmanFilterforDummies.aspx
                 var kalmanGain = result.loc_covariance / (result.loc_covariance + STANDARD_DEVIATION);
@@ -47,7 +47,7 @@ messageSchema.statics.addOrUpdate = function(data, callback) {
                     loc_found: newCovariance < 1E-4,
                     loc_lastUpdated: new Date()
                 }, function(err) {
-                    callback(err, result, true);
+                    callback(err, result, {isNew: false, isUpdated: true});
                 });
             }
         } else {
@@ -60,7 +60,7 @@ messageSchema.statics.addOrUpdate = function(data, callback) {
                 numberOfLikes: data.numberOfLikes
             });
             message.save(function(err) {
-                callback(err, message, false);
+                callback(err, message, {isNew: true, isUpdated: false});
             })
         }
     });
