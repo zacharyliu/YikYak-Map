@@ -14,5 +14,13 @@
     {
         "name" : "Yale University",
         "loc": [-72.9267, 41.3111]
+    },
+    {
+        "name": "Yale University West Campus",
+        "loc": [-72.99216, 41.257452]
+    },
+    {
+        "name": "Cornell University",
+        "loc": [-76.4786, 42.4485]
     }
 ]

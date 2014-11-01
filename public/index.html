@@ -41,7 +41,7 @@
                             latitude: messages[i].loc[1],
                             longitude: messages[i].loc[0]
                         }, {
-                            duration: 500,
+                            duration: 300,
                             step: function() {
                                 var myLatlng = new google.maps.LatLng(this.latitude, this.longitude);
                                 this.marker.setPosition(myLatlng);
@@ -61,7 +61,7 @@
 
         setInterval(function() {
             refresh();
-        }, 2000);
+        }, 1000);
 
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>

@@ -141,9 +141,12 @@ function refresh() {
             done();
         });
     }, function(err) {
+//        Message.findOne({messageID: "R/5454e54051ac1c8f44974e76cc9c2"}, function(err, message) {
+//            console.log(message.loc[1] + "\t" + message.loc[0]);
+//        });
         setTimeout(function() {
             refresh();
-        }, 100);
+        }, 500);
     });
 }
 
