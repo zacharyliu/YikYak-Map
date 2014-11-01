@@ -1,10 +1,77 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<head>
+    <style type="text/css">
+        html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js">
+    </script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        var map;
+        var markers = [];
+
+        function initialize() {
+            var mapOptions = {
+                center: { lat: 40.3487, lng: -74.6593},
+                zoom: 8
+            };
+            map = new google.maps.Map(document.getElementById('map-canvas'),
+                    mapOptions);
+        }
+
+        function refresh() {
+            clearMarkers();
+            $.getJSON('/api/all', function(messages) {
+                for (var i=0; i<messages.length; i++) {
+                    var myLatlng = new google.maps.LatLng(messages[i].loc[1], messages[i].loc[0]);
+                    addMarker(myLatlng, messages[i].message)
+                }
+            });
+        }
+
+        setInterval(function() {
+            refresh();
+        }, 2000);
+
+        // Add a marker to the map and push to the array.
+        function addMarker(location, message) {
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: message
+            });
+            markers.push(marker);
+        }
+
+        // Sets the map on all markers in the array.
+        function setAllMap(map) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+
+        // Removes the markers from the map, but keeps them in the array.
+        function clearMarkers() {
+            setAllMap(null);
+        }
+
+        // Shows any markers currently in the array.
+        function showMarkers() {
+            setAllMap(map);
+        }
+
+        // Deletes all markers in the array by removing references to them.
+        function deleteMarkers() {
+            clearMarkers();
+            markers = [];
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
 </head>
 <body>
-
+<div id="map-canvas"></div>
 </body>
 </html>

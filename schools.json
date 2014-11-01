@@ -1,0 +1,18 @@
+[
+    {
+        "name": "Princeton University",
+        "loc": [-74.6593, 40.3487],
+        "sections": [
+            {
+                "name": "Rockefeller College",
+                "loc": [
+
+                ]
+            }
+        ]
+    },
+    {
+        "name" : "Yale University",
+        "loc": [-72.9267, 41.3111]
+    }
+]

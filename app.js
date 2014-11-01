@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var https = require('https');
 var async = require('async');
+var _ = require('lodash');
 //var favicon = require('serve-favicon');
 //var logger = require('morgan');
 //var cookieParser = require('cookie-parser');
@@ -11,15 +12,17 @@ var async = require('async');
 //var users = require('./routes/users');
 
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/yakbattle');
+mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/yakbattle2');
 
 var Message = require('./message');
+
+var schools = require('./schools');
 
 var app = express();
 
 // view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'jade');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -43,6 +46,12 @@ api.get('/schools/:schoolID/sections', function(req, res) {
 
 api.get('/schools/:schoolID/sections/:sectionID/versus/:versusSectionID', function(req, res) {
 
+});
+
+api.get('/all', function(req, res) {
+    Message.find({}, function(err, messages) {
+        res.json(messages);
+    });
 });
 
 app.use('/api', api);
@@ -86,7 +95,7 @@ var server = app.listen(app.get('port'), function() {
 });
 
 
-function getYaks(latitude, longitude) {
+function getYaks(latitude, longitude, callback) {
     var url = 'https://us-east-api.yikyakapi.net/api/getMessages?lat=' + latitude + '&long=' + longitude + '&userID=81282DCE4E540935E9C9D81222CDC7F5';
     https.get(url, function(res) {
         var body = '';
@@ -97,12 +106,23 @@ function getYaks(latitude, longitude) {
 
         res.on('end', function() {
             var data = JSON.parse(body);
+            var newCount = 0;
+            var updatedCount = 0;
             async.each(data.messages, function(message, done) {
-                Message.addOrUpdate(message, done);
+                Message.addOrUpdate(message, function(err, message, isUpdated) {
+                    if (err) {
+                        done(err);
+                    } else {
+                        if (isUpdated) {
+                            updatedCount++;
+                        } else {
+                            newCount++;
+                        }
+                        done();
+                    }
+                });
             }, function(err) {
-                if (err) {
-                    console.log(err);
-                }
+                callback(err, newCount, updatedCount);
             });
         });
     }).on('error', function(e) {
@@ -110,4 +130,21 @@ function getYaks(latitude, longitude) {
     });
 }
 
-getYaks(41.2552032, -72.9933632);
+function refresh() {
+    async.each(schools, function(school, done) {
+        getYaks(school.loc[1], school.loc[0], function (err, newCount, updatedCount) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(school.name + ": " + newCount + " new, " + updatedCount + " updated");
+            }
+            done();
+        });
+    }, function(err) {
+        setTimeout(function() {
+            refresh();
+        }, 1000);
+    });
+}
+
+refresh();
