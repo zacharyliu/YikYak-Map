@@ -12,7 +12,7 @@ var _ = require('lodash');
 //var users = require('./routes/users');
 
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/yakbattle2');
+mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/yakbattle3');
 
 var Message = require('./message');
 

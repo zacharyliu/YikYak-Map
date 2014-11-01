@@ -7,6 +7,9 @@
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js">
     </script>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?libraries=visualization&sensor=true">
+    </script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <!--<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>-->
     <script type="text/javascript">
@@ -64,7 +67,7 @@
                         }).animate({
                             latitude: messages[i].loc[1],
                             longitude: messages[i].loc[0],
-                            radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance)
+                            radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance, originalLatitude)
                         }, {
                             duration: 1000,
                             easing: 'linear',
@@ -93,7 +96,7 @@
                                 fillOpacity: 0.35,
                                 map: map,
                                 center: myLatlng,
-                                radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance)
+                                radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance, messages[i].loc[1])
                             })
                         };
                     }
