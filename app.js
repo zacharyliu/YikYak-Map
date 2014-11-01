@@ -154,9 +154,14 @@ function refresh() {
 //        Message.findOne({messageID: "R/5454e54051ac1c8f44974e76cc9c2"}, function(err, message) {
 //            console.log(message.loc[1] + "\t" + message.loc[0]);
 //        });
-        setTimeout(function() {
-            refresh();
-        }, 500);
+        // Determine delay until next update
+        Message.count({loc_found: false}, function(err, count) {
+            console.log(count);
+            var delay = (count == 0) ? 5000 : 500;
+            setTimeout(function() {
+                refresh();
+            }, delay);
+        });
     });
 }
 
