@@ -11,6 +11,10 @@ var messageSchema = new mongoose.Schema({
         type: Number,
         default: 1
     },
+    loc_found: {
+        type: Boolean,
+        default: false
+    },
     time: Date,
     numberOfLikes: Number
 });
@@ -23,22 +27,27 @@ messageSchema.statics.addOrUpdate = function(data, callback) {
         if (err) {
             callback(err);
         } else if (result) {
-            // Kalman filtering http://bilgin.esme.org/BitsBytes/KalmanFilterforDummies.aspx
-            var kalmanGain = result.loc_covariance / (result.loc_covariance + STANDARD_DEVIATION);
-            var newLatitude = result.loc[1] + kalmanGain * (data.latitude - result.loc[1]);
-            var newLongitude = result.loc[0] + kalmanGain * (data.longitude - result.loc[0]);
-            var newCovariance = (1 - kalmanGain) * result.loc_covariance;
-
-            result.update({
-                numberOfLikes: data.numberOfLikes,
-                loc: [
-                    newLongitude,
-                    newLatitude
-                ],
-                loc_covariance: newCovariance
-            }, function(err) {
+            if (result.loc_found) {
                 callback(err, result, true);
-            });
+            } else {
+                // Kalman filtering http://bilgin.esme.org/BitsBytes/KalmanFilterforDummies.aspx
+                var kalmanGain = result.loc_covariance / (result.loc_covariance + STANDARD_DEVIATION);
+                var newLatitude = result.loc[1] + kalmanGain * (data.latitude - result.loc[1]);
+                var newLongitude = result.loc[0] + kalmanGain * (data.longitude - result.loc[0]);
+                var newCovariance = (1 - kalmanGain) * result.loc_covariance;
+
+                result.update({
+                    numberOfLikes: data.numberOfLikes,
+                    loc: [
+                        newLongitude,
+                        newLatitude
+                    ],
+                    loc_covariance: newCovariance,
+                    loc_found: newCovariance < 1E-4
+                }, function(err) {
+                    callback(err, result, true);
+                });
+            }
         } else {
             var message = new _this({
                 messageID: data.messageID,
