@@ -54,6 +54,16 @@ api.get('/all', function(req, res) {
     });
 });
 
+api.get('/new', function(req, res) {
+    Message.find({
+        loc_lastUpdated: {
+            $gte: new Date(req.params.since)
+        }
+    }, function(err, messages) {
+        res.json(messages);
+    });
+});
+
 app.use('/api', api);
 
 // catch 404 and forward to error handler

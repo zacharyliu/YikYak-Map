@@ -12,6 +12,7 @@
     <script type="text/javascript">
         var map;
         var markers = {};
+        var lastUpdated = -1;
 
         function initialize() {
             var mapOptions = {
@@ -23,7 +24,8 @@
         }
 
         function refresh() {
-            $.getJSON('/api/all', function(messages) {
+            var url = (lastUpdated == -1) ? '/api/all' : '/api/new?since=' + lastUpdated;
+            $.getJSON(url, function(messages) {
                 for (var i=0; i<messages.length; i++) {
 
                     if (messages[i].messageID in markers) {
@@ -41,7 +43,8 @@
                             latitude: messages[i].loc[1],
                             longitude: messages[i].loc[0]
                         }, {
-                            duration: 300,
+                            duration: 1000,
+                            easing: 'linear',
                             step: function() {
                                 var myLatlng = new google.maps.LatLng(this.latitude, this.longitude);
                                 this.marker.setPosition(myLatlng);
@@ -57,6 +60,7 @@
                     }
                 }
             });
+            lastUpdated = Date.now();
         }
 
         setInterval(function() {

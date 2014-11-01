@@ -15,6 +15,7 @@ var messageSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    loc_lastUpdated: Date,
     time: Date,
     numberOfLikes: Number
 });
@@ -43,7 +44,8 @@ messageSchema.statics.addOrUpdate = function(data, callback) {
                         newLatitude
                     ],
                     loc_covariance: newCovariance,
-                    loc_found: newCovariance < 1E-4
+                    loc_found: newCovariance < 1E-4,
+                    loc_lastUpdated: new Date()
                 }, function(err) {
                     callback(err, result, true);
                 });
@@ -53,6 +55,7 @@ messageSchema.statics.addOrUpdate = function(data, callback) {
                 messageID: data.messageID,
                 message: data.message,
                 loc: [data.longitude, data.latitude],
+                loc_lastUpdated: new Date(),
                 time: new Date(data.time),
                 numberOfLikes: data.numberOfLikes
             });
