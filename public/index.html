@@ -227,7 +227,16 @@
                             marker: new google.maps.Marker({
                                 position: myLatlng,
                                 map: map,
-                                title: messages[i].message
+                                title: messages[i].message,
+                                icon: {
+                                    path: google.maps.SymbolPath.CIRCLE,
+                                    scale: 10,
+                                    strokeColor: '#FFFFFF',
+                                    strokeWeight: 3,
+                                    fillColor: 'green',
+                                    fillOpacity: 1,
+                                    strokeOpacity: 0.8
+                                }
                             }),
                             circle: new google.maps.Circle({
                                 strokeColor: '#FF0000',
@@ -254,7 +263,6 @@
                         location: new google.maps.LatLng(messages[i].loc[1], messages[i].loc[0]),
                         weight: messages[i].numberOfLikes > 0 ? messages[i].numberOfLikes : 0
                     });
-                    console.log(messages[i].numberOfLikes, messages[i].message);
                 }
                 var heatmap = new google.maps.visualization.HeatmapLayer({
                     data: heatMapData,
@@ -268,9 +276,9 @@
 
         heatmap();
 
-//        setInterval(function() {
-//            refresh();
-//        }, 1000);
+        setInterval(function() {
+            refresh();
+        }, 1000);
 
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>
