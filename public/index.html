@@ -263,6 +263,18 @@
 //                                radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance, messages[i].loc[1])
 //                            })
                     };
+
+                    (function(marker, message) {
+                        var infowindow = new google.maps.InfoWindow({
+                            content: message
+                        });
+                        google.maps.event.addListener(marker, 'mouseover', function() {
+                            infowindow.open(map, marker);
+                        });
+                        google.maps.event.addListener(marker, 'mouseout', function() {
+                            infowindow.close();
+                        });
+                    })(markers[messages[i].messageID].marker, messages[i].message);
                 }
             }
         }
