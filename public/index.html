@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>YikYak Map</title>
     <style type="text/css">
-        html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+        html, body, #map-canvas { height: 100%; margin: 0; padding: 0; font-family: Arial; }
     </style>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?libraries=visualization&sensor=true">
     </script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
     <!--<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>-->
     <script type="text/javascript">
         var map;
@@ -16,6 +21,8 @@
         var lastUpdated = Date.now();
         var schools = {};
         var heatMapData;
+
+        toastr.options.timeOut = 3000;
 
         var mapStyle = [
             {
@@ -275,6 +282,8 @@
                             infowindow.close();
                         });
                     })(markers[messages[i].messageID].marker, messages[i].message);
+
+                    toastr.info('New Yak at ' + messages[i].schoolName + ': ' + messages[i].message);
                 }
             }
         }
