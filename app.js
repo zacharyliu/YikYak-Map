@@ -85,7 +85,7 @@ api.get('/yo', function(req, res) {
                 }
             }
         }
-    }).limit(10).exec(function(err, messages) {
+    }).limit(20).exec(function(err, messages) {
         var text = "";
         for (var i=0; i<messages.length; i++) {
             text = text + " " + messages[i].message;
