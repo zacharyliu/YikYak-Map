@@ -3,6 +3,9 @@ var path = require('path');
 var https = require('https');
 var async = require('async');
 var _ = require('lodash');
+var d3 = require('d3');
+var d3cloud = require('./d3.layout.cloud')(d3);
+
 //var favicon = require('serve-favicon');
 //var logger = require('morgan');
 //var cookieParser = require('cookie-parser');
