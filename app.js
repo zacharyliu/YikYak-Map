@@ -169,6 +169,9 @@ function getYaks(latitude, longitude, schoolName, callback) {
                         if (status.isUpdated) {
                             updatedCount++;
                         }
+                        if (!status.isNew && !status.isUpdated) {
+                            io.sockets.emit('message_found', message);
+                        }
                         done(null, message);
                     }
                 });

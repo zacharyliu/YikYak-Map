@@ -15,6 +15,7 @@
         var markers = {};
         var lastUpdated = Date.now();
         var schools = {};
+        var heatMapData;
 
         var mapStyle = [
             {
@@ -176,6 +177,9 @@
                 socket.on('messages', function(messages) {
                     refresh(messages);
                 });
+                socket.on('message_found', function(message) {
+                    heatMapData.push(new google.maps.LatLng(message.loc[1], message.loc[0]));
+                });
             });
         }
 
@@ -268,13 +272,11 @@
 
         function heatmap() {
             $.getJSON('/api/all', function(messages) {
-                var heatMapData = [];
+                var heatMapDataArray = [];
                 for (var i=0; i<messages.length; i++) {
-                    heatMapData.push({
-                        location: new google.maps.LatLng(messages[i].loc[1], messages[i].loc[0]),
-                        weight: messages[i].numberOfLikes > 0 ? messages[i].numberOfLikes : 0
-                    });
+                    heatMapDataArray.push(new google.maps.LatLng(messages[i].loc[1], messages[i].loc[0]));
                 }
+                heatMapData = new google.maps.MVCArray(heatMapDataArray);
                 var heatmap = new google.maps.visualization.HeatmapLayer({
                     data: heatMapData,
                     radius: 200,
