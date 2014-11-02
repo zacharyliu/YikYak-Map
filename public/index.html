@@ -314,10 +314,11 @@
                         setTimeout(function() {
                             notification.close();
                         }, 3000);
-                    } else {
-                        firstLoad = false;
                     }
                 }
+            }
+            if (firstLoad) {
+                firstLoad = false;
             }
         }
 
