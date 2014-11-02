@@ -15,7 +15,7 @@ var d3cloud = require('./d3.layout.cloud')(d3);
 //var users = require('./routes/users');
 
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/yakbattle3');
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/yakbattle3');
 
 var Message = require('./message');
 
