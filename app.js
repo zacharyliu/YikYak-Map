@@ -60,7 +60,8 @@ api.get('/new', function(req, res) {
     Message.find({
         loc_lastUpdated: {
             $gte: new Date(req.query.since)
-        }
+        },
+        schoolName: req.query.schoolName
     }, function(err, messages) {
         res.json(messages);
     });
@@ -174,7 +175,8 @@ function getYaks(latitude, longitude, schoolName, callback) {
                             updatedCount++;
                         }
                         if (status.isFound) {
-                            io.sockets.emit('message_found', message);
+//                            io.sockets.emit('message_found', message);
+                            io.to(schoolName).emit('message_found', message);
                         }
                         done(null, message);
                     }
@@ -200,6 +202,7 @@ function refresh() {
                 newOrUpdatedCounts: newCount + updatedCount,
                 messages: messages
             });
+            io.to(school.name).emit('messages', messages);
         });
     }, function(err, result) {
         // Determine delay until next update
@@ -215,8 +218,13 @@ function refresh() {
             refresh();
         }, delay);
 
-        io.sockets.emit('messages', messages);
+//        io.sockets.emit('messages', messages);
     });
 }
 
 refresh();
+
+io.sockets.on('connection', function (socket) {
+    socket.on('subscribe', function(data) { socket.join(data.room); })
+    socket.on('unsubscribe', function(data) { socket.leave(data.room); })
+});
