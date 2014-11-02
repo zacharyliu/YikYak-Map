@@ -327,7 +327,9 @@
         }
 
         function heatmap() {
-            $.getJSON('/api/all', function(messages) {
+            var pastDay = new Date();
+            pastDay.setHours(pastDay.getHours() - 24);
+            $.getJSON('/api/new?since=' + (+pastDay), function(messages) {
                 var heatMapDataArray = [];
                 for (var i=0; i<messages.length; i++) {
                     heatMapDataArray.push(new google.maps.LatLng(messages[i].loc[1], messages[i].loc[0]));

@@ -70,7 +70,12 @@ api.get('/yo', function(req, res) {
     var username = req.query.username;
     var location = req.query.location.split(";");
     console.log("Yo from " + username + " @ " + location[0] + ", " + location[1]);
+    var twelveHoursAgo = new Date();
+    twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
     Message.find({
+        time: {
+            $gte: twelveHoursAgo
+        },
         loc: {
             $near: {
                 $geometry: {
@@ -84,13 +89,12 @@ api.get('/yo', function(req, res) {
         for (var i=0; i<messages.length; i++) {
             text = text + " " + messages[i].message;
         }
-        console.log(text);
 
         rest.post('http://cloudmaker.gatheringpoint.com/index.php', {
             data: { textblock: text }
         }).on('complete', function(data) {
             var link = JSON.parse(data).url;
-            console.log(link);
+            console.log("Sending Yo to " + username + ": " + link);
             rest.post('https://api.justyo.co/yo/', {
                 data: {
                     api_token: process.env.YO,
