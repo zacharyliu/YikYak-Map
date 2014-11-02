@@ -3,8 +3,7 @@ var path = require('path');
 var https = require('https');
 var async = require('async');
 var _ = require('lodash');
-var d3 = require('d3');
-var d3cloud = require('d3.layout.cloud');
+var rest = require('restler');
 
 //var favicon = require('serve-favicon');
 //var logger = require('morgan');
@@ -81,7 +80,25 @@ api.get('/yo', function(req, res) {
             }
         }
     }).limit(10).exec(function(err, messages) {
-        console.log(err, messages);
+        var text = "";
+        for (var i=0; i<messages.length; i++) {
+            text = text + " " + messages[i].message;
+        }
+        console.log(text);
+
+        rest.post('http://cloudmaker.gatheringpoint.com/index.php', {
+            data: { textblock: text }
+        }).on('complete', function(data) {
+            var link = JSON.parse(data).url;
+            console.log(link);
+            rest.post('https://api.justyo.co/yo/', {
+                data: {
+                    api_token: process.env.YO,
+                    username: username,
+                    link: link
+                }
+            });
+        });
     });
     res.end();
 });
