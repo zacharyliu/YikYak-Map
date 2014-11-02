@@ -103,6 +103,7 @@ app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'), function() {
     console.log('Express server listening on port ' + server.address().port);
 });
+var io = require('socket.io')(server);
 
 
 function getYaks(latitude, longitude, callback) {
@@ -118,7 +119,7 @@ function getYaks(latitude, longitude, callback) {
             var data = JSON.parse(body);
             var newCount = 0;
             var updatedCount = 0;
-            async.each(data.messages, function(message, done) {
+            async.map(data.messages, function(message, done) {
                 Message.addOrUpdate(message, function(err, message, status) {
                     if (err) {
                         done(err);
@@ -129,11 +130,11 @@ function getYaks(latitude, longitude, callback) {
                         if (status.isUpdated) {
                             updatedCount++;
                         }
-                        done();
+                        done(null, message);
                     }
                 });
-            }, function(err) {
-                callback(err, newCount, updatedCount);
+            }, function(err, messages) {
+                callback(err, newCount, updatedCount, messages);
             });
         });
     }).on('error', function(e) {
@@ -143,28 +144,32 @@ function getYaks(latitude, longitude, callback) {
 
 function refresh() {
     async.map(schools, function(school, done) {
-        getYaks(school.loc[1], school.loc[0], function (err, newCount, updatedCount) {
+        getYaks(school.loc[1], school.loc[0], function (err, newCount, updatedCount, messages) {
             if (err) {
                 console.log(err);
             } else {
                 console.log(school.name + ": " + newCount + " new, " + updatedCount + " updated");
             }
-            done(err, newCount + updatedCount);
+            done(err, {
+                newOrUpdatedCounts: newCount + updatedCount,
+                messages: messages
+            });
         });
-    }, function(err, newOrUpdatedCounts) {
-//        Message.findOne({messageID: "R/5454e54051ac1c8f44974e76cc9c2"}, function(err, message) {
-//            console.log(message.loc[1] + "\t" + message.loc[0]);
-//        });
+    }, function(err, result) {
         // Determine delay until next update
         var newOrUpdatedCount = 0;
-        for (var i=0; i<newOrUpdatedCounts.length; i++) {
-            newOrUpdatedCount += newOrUpdatedCounts[i];
+        var messages = [];
+        for (var i=0; i<result.length; i++) {
+            newOrUpdatedCount += result[i].newOrUpdatedCounts;
+            messages = messages.concat(result[i].messages);
         }
-        console.log(newOrUpdatedCount);
+
         var delay = (newOrUpdatedCount == 0) ? 5000 : 500;
         setTimeout(function() {
             refresh();
         }, delay);
+
+        io.sockets.emit('messages', messages);
     });
 }
 

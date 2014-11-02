@@ -8,6 +8,7 @@
             src="https://maps.googleapis.com/maps/api/js?libraries=visualization&sensor=true">
     </script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <!--<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>-->
     <script type="text/javascript">
         var map;
@@ -186,47 +187,46 @@
             return d * 1000 * 4;
         }
 
-        function refresh() {
-            var url = (lastUpdated == -1) ? '/api/all' : '/api/new?since=' + lastUpdated;
-            $.getJSON(url, function(messages) {
-                for (var i=0; i<messages.length; i++) {
-                    if (messages[i].messageID in markers) {
+        var socket = io();
+        socket.on('messages', function(messages) {
+            for (var i=0; i<messages.length; i++) {
+                if (messages[i].messageID in markers) {
 //                        console.log("moving " + messages[i].messageID);
-                        var marker = markers[messages[i].messageID].marker;
+                    var marker = markers[messages[i].messageID].marker;
 //                        var circle = markers[messages[i].messageID].circle;
-                        var originalLatitude = marker.getPosition().lat();
-                        var originalLongitude = marker.getPosition().lng();
+                    var originalLatitude = marker.getPosition().lat();
+                    var originalLongitude = marker.getPosition().lng();
 //                        var originalRadius = circle.getRadius();
 
-                        $({
-                            latitude: originalLatitude,
-                            longitude: originalLongitude,
+                    $({
+                        latitude: originalLatitude,
+                        longitude: originalLongitude,
 //                            radius: originalRadius,
-                            marker: marker,
+                        marker: marker,
 //                            circle: circle,
 //                            animateCircle: (originalRadius != 0)
-                        }).animate({
-                            latitude: messages[i].loc[1],
-                            longitude: messages[i].loc[0],
+                    }).animate({
+                        latitude: messages[i].loc[1],
+                        longitude: messages[i].loc[0],
 //                            radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance, originalLatitude)
-                        }, {
-                            duration: 1000,
-                            step: function() {
-                                var myLatlng = new google.maps.LatLng(this.latitude, this.longitude);
-                                this.marker.setPosition(myLatlng);
+                    }, {
+                        duration: 1000,
+                        step: function() {
+                            var myLatlng = new google.maps.LatLng(this.latitude, this.longitude);
+                            this.marker.setPosition(myLatlng);
 //                                if (this.animateCircle) {
 //                                    this.circle.setCenter(myLatlng);
 //                                    this.circle.setRadius(this.radius);
 //                                }
-                            }
-                        });
-                    } else {
-                        var myLatlng = new google.maps.LatLng(messages[i].loc[1], messages[i].loc[0]);
-                        markers[messages[i].messageID] = {
-                            marker: new google.maps.Marker({
-                                position: myLatlng,
-                                map: map,
-                                title: messages[i].message,
+                        }
+                    });
+                } else {
+                    var myLatlng = new google.maps.LatLng(messages[i].loc[1], messages[i].loc[0]);
+                    markers[messages[i].messageID] = {
+                        marker: new google.maps.Marker({
+                            position: myLatlng,
+                            map: map,
+                            title: messages[i].message,
 //                                icon: {
 //                                    path: google.maps.SymbolPath.CIRCLE,
 //                                    scale: 10,
@@ -236,7 +236,7 @@
 //                                    fillOpacity: 1,
 //                                    strokeOpacity: 0.8
 //                                }
-                            }),
+                        }),
 //                            circle: new google.maps.Circle({
 //                                strokeColor: '#FF0000',
 //                                strokeOpacity: 0.8,
@@ -247,12 +247,10 @@
 //                                center: myLatlng,
 //                                radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance, messages[i].loc[1])
 //                            })
-                        };
-                    }
+                    };
                 }
-            });
-            lastUpdated = Date.now();
-        }
+            }
+        });
 
         function heatmap() {
             $.getJSON('/api/all', function(messages) {
@@ -274,10 +272,6 @@
         }
 
 //        heatmap();
-
-        setInterval(function() {
-            refresh();
-        }, 1000);
 
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>
