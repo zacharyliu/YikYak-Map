@@ -106,7 +106,7 @@ var server = app.listen(app.get('port'), function() {
 var io = require('socket.io')(server);
 
 
-function getYaks(latitude, longitude, callback) {
+function getYaks(latitude, longitude, schoolName, callback) {
     var url = 'https://us-east-api.yikyakapi.net/api/getMessages?lat=' + latitude + '&long=' + longitude + '&userID=81282DCE4E540935E9C9D81222CDC7F5';
     https.get(url, function(res) {
         var body = '';
@@ -120,7 +120,7 @@ function getYaks(latitude, longitude, callback) {
             var newCount = 0;
             var updatedCount = 0;
             async.map(data.messages, function(message, done) {
-                Message.addOrUpdate(message, function(err, message, status) {
+                Message.addOrUpdate(message, schoolName, function(err, message, status) {
                     if (err) {
                         done(err);
                     } else {
@@ -144,7 +144,7 @@ function getYaks(latitude, longitude, callback) {
 
 function refresh() {
     async.map(schools, function(school, done) {
-        getYaks(school.loc[1], school.loc[0], function (err, newCount, updatedCount, messages) {
+        getYaks(school.loc[1], school.loc[0], school.name, function (err, newCount, updatedCount, messages) {
             if (err) {
                 console.log(err);
             } else {

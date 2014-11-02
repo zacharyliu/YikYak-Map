@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var messageSchema = new mongoose.Schema({
+    schoolName: String,
     messageID: String,
     message: String,
     loc: {
@@ -22,7 +23,7 @@ var messageSchema = new mongoose.Schema({
 
 var STANDARD_DEVIATION = 0.011710113; // determined experimentally
 
-messageSchema.statics.addOrUpdate = function(data, callback) {
+messageSchema.statics.addOrUpdate = function(data, schoolName, callback) {
     var _this = this;
     _this.findOne({messageID: data.messageID}, function(err, result) {
         if (err) {
@@ -52,6 +53,7 @@ messageSchema.statics.addOrUpdate = function(data, callback) {
             }
         } else {
             var message = new _this({
+                schoolName: schoolName,
                 messageID: data.messageID,
                 message: data.message,
                 loc: [data.longitude, data.latitude],
