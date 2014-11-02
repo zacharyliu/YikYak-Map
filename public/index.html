@@ -179,6 +179,7 @@
                 });
                 socket.on('message_found', function(message) {
                     heatMapData.push(new google.maps.LatLng(message.loc[1], message.loc[0]));
+                    console.log(message);
                 });
             });
         }
@@ -287,7 +288,7 @@
             });
         }
 
-//        heatmap();
+        heatmap();
 
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>

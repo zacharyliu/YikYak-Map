@@ -37,6 +37,7 @@ messageSchema.statics.addOrUpdate = function(data, schoolName, callback) {
                 var newLatitude = result.loc[1] + kalmanGain * (data.latitude - result.loc[1]);
                 var newLongitude = result.loc[0] + kalmanGain * (data.longitude - result.loc[0]);
                 var newCovariance = (1 - kalmanGain) * result.loc_covariance;
+                var isFound = (newCovariance < 1E-4);
 
                 result.update({
                     numberOfLikes: data.numberOfLikes,
@@ -45,10 +46,10 @@ messageSchema.statics.addOrUpdate = function(data, schoolName, callback) {
                         newLatitude
                     ],
                     loc_covariance: newCovariance,
-                    loc_found: newCovariance < 1E-4,
+                    loc_found: isFound,
                     loc_lastUpdated: new Date()
                 }, function(err) {
-                    callback(err, result, {isNew: false, isUpdated: true});
+                    callback(err, result, {isNew: false, isUpdated: true, isFound: isFound});
                 });
             }
         } else {
