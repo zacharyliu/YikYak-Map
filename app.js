@@ -235,7 +235,7 @@ function refresh() {
             io.sockets.emit('schoolStats', results);
         });
 
-        var delay = (newOrUpdatedCount == 0) ? 5000 : 500;
+        var delay = (newOrUpdatedCount == 0) ? 1000 : 500;
         setTimeout(function() {
             refresh();
         }, delay);
