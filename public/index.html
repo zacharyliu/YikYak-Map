@@ -14,6 +14,7 @@
         var map;
         var markers = {};
         var lastUpdated = Date.now();
+        var schools;
 
         var mapStyle = [
             {
@@ -166,6 +167,14 @@
             };
             map = new google.maps.Map(document.getElementById('map-canvas'),
                     mapOptions);
+
+            $.getJSON('/schools.json', function(data) {
+                schools = data;
+                var socket = io();
+                socket.on('messages', function(messages) {
+                    refresh(messages);
+                });
+            });
         }
 
         function deltaToMeters(delta, latitude) {
@@ -187,8 +196,7 @@
             return d * 1000 * 4;
         }
 
-        var socket = io();
-        socket.on('messages', function(messages) {
+        function refresh(messages) {
             for (var i=0; i<messages.length; i++) {
                 if (messages[i].messageID in markers) {
 //                        console.log("moving " + messages[i].messageID);
@@ -250,7 +258,7 @@
                     };
                 }
             }
-        });
+        }
 
         function heatmap() {
             $.getJSON('/api/all', function(messages) {

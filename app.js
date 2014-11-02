@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/yakbattle3');
 
 var Message = require('./message');
 
-var schools = require('./schools');
+var schools = require('./public/schools');
 
 var app = express();
 
