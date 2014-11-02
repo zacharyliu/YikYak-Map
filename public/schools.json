@@ -2,25 +2,21 @@
     {
         "name": "Princeton University",
         "loc": [-74.6593, 40.3487],
-        "sections": [
-            {
-                "name": "Rockefeller College",
-                "loc": [
-
-                ]
-            }
-        ]
+        "color": [244, 111, 27]
     },
     {
         "name" : "Yale University",
-        "loc": [-72.9267, 41.3111]
+        "loc": [-72.9267, 41.3111],
+        "color": [15, 77, 146]
     },
     {
         "name": "Yale University West Campus",
-        "loc": [-72.99216, 41.257452]
+        "loc": [-72.99216, 41.257452],
+        "color": [15, 77, 146]
     },
     {
         "name": "Cornell University",
-        "loc": [-76.4786, 42.4485]
+        "loc": [-76.4786, 42.4485],
+        "color": [179, 27, 27]
     }
 ]
