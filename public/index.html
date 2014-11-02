@@ -21,6 +21,11 @@
         var lastUpdated = Date.now();
         var schools = {};
         var heatMapData;
+        var firstLoad = true;
+
+        window.onclick = function() {
+            Notification.requestPermission();
+        };
 
         toastr.options.timeOut = 3000;
 
@@ -283,7 +288,17 @@
                         });
                     })(markers[messages[i].messageID].marker, messages[i].message);
 
-                    toastr.info('New Yak at ' + messages[i].schoolName + ': ' + messages[i].message);
+                    if (!firstLoad) {
+//                        toastr.info('New Yak at ' + messages[i].schoolName + ': ' + messages[i].message);
+                        var notification = new Notification('New Yak at ' + messages[i].schoolName, {
+                            body: messages[i].message
+                        });
+                        setTimeout(function() {
+                            notification.close();
+                        }, 3000);
+                    } else {
+                        firstLoad = false;
+                    }
                 }
             }
         }
