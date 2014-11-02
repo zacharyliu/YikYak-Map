@@ -57,11 +57,30 @@ api.get('/all', function(req, res) {
 api.get('/new', function(req, res) {
     Message.find({
         loc_lastUpdated: {
-            $gte: new Date(req.params.since)
+            $gte: new Date(req.query.since)
         }
     }, function(err, messages) {
         res.json(messages);
     });
+});
+
+api.get('/yo', function(req, res) {
+    var username = req.query.username;
+    var location = req.query.location.split(";");
+    console.log("Yo from " + username + " @ " + location[0] + ", " + location[1]);
+    Message.find({
+        loc: {
+            $near: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: [location[1], location[0]]
+                }
+            }
+        }
+    }).limit(10).exec(function(err, messages) {
+        console.log(err, messages);
+    });
+    res.end();
 });
 
 app.use('/api', api);
