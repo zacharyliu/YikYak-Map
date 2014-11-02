@@ -245,8 +245,8 @@
                                 icon: {
                                     path: google.maps.SymbolPath.CIRCLE,
                                     scale: 10,
-                                    strokeColor: '#000000',
-                                    strokeWeight: 1,
+                                    strokeColor: '#9b9b9b',
+                                    strokeWeight: 2,
                                     fillColor: getSchoolColor(messages[i].schoolName),
                                     fillOpacity: 1,
                                     strokeOpacity: 1
@@ -292,9 +292,10 @@
                 heatMapData = new google.maps.MVCArray(heatMapDataArray);
                 var heatmap = new google.maps.visualization.HeatmapLayer({
                     data: heatMapData,
-                    radius: 200,
+                    radius: 100,
                     gradient: ["rgba(87, 226, 202, 0)", "rgba(87, 226, 202, 255)"],
-                    opacity: 0.8
+                    opacity: 0.9,
+                    dissipating: false
                 });
                 heatmap.setMap(map);
             });
