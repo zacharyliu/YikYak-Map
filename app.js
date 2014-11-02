@@ -213,6 +213,28 @@ function refresh() {
             messages = messages.concat(result[i].messages);
         }
 
+        var pastDay = new Date();
+        pastDay.setHours(pastDay.getHours() - 24);
+        Message.aggregate({
+            $match: {
+                time: {
+                    $gte: pastDay
+                }
+            }
+        }, {
+            $group: {
+                _id: "$schoolName",
+                averageScore: {
+                    $avg: "$numberOfLikes"
+                },
+                count: {
+                    $sum: 1
+                }
+            }
+        }, function(err, results) {
+            io.sockets.emit('schoolStats', results);
+        });
+
         var delay = (newOrUpdatedCount == 0) ? 5000 : 500;
         setTimeout(function() {
             refresh();
