@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/yakbattle3');
 
 var Message = require('./message');
 
-var schools = require('./public/schools');
+var schools = require('./schools');
 
 var app = express();
 
@@ -39,15 +39,7 @@ var api = express.Router();
 
 /* GET home page. */
 api.get('/schools', function(req, res) {
-    res.render('index', { title: 'Express' });
-});
-
-api.get('/schools/:schoolID/sections', function(req, res) {
-
-});
-
-api.get('/schools/:schoolID/sections/:sectionID/versus/:versusSectionID', function(req, res) {
-
+    res.json(schools);
 });
 
 api.get('/all', function(req, res) {

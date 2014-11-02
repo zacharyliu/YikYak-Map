@@ -228,7 +228,7 @@
             map = new google.maps.Map(document.getElementById('map-canvas'),
                     mapOptions);
 
-            $.getJSON('/schools.json', function(data) {
+            $.getJSON('/api/schools', function(data) {
                 for (var i=0; i<data.length; i++) {
                     schools[data[i].name] = data[i];
                     var $elem = $('<li><a href="#"><div class="left"><span></span><div class="right"></div></div></a></li>');
