@@ -12,7 +12,7 @@
     <script type="text/javascript">
         var map;
         var markers = {};
-        var lastUpdated = -1;
+        var lastUpdated = Date.now();
 
         var mapStyle = [
             {
@@ -183,7 +183,7 @@
 
             var d = R * c;
 
-            return d * 1000;
+            return d * 1000 * 4;
         }
 
         function refresh() {
@@ -193,32 +193,31 @@
                     if (messages[i].messageID in markers) {
 //                        console.log("moving " + messages[i].messageID);
                         var marker = markers[messages[i].messageID].marker;
-                        var circle = markers[messages[i].messageID].circle;
+//                        var circle = markers[messages[i].messageID].circle;
                         var originalLatitude = marker.getPosition().lat();
                         var originalLongitude = marker.getPosition().lng();
-                        var originalRadius = circle.getRadius();
+//                        var originalRadius = circle.getRadius();
 
                         $({
                             latitude: originalLatitude,
                             longitude: originalLongitude,
-                            radius: originalRadius,
+//                            radius: originalRadius,
                             marker: marker,
-                            circle: circle,
-                            animateCircle: (originalRadius != 0)
+//                            circle: circle,
+//                            animateCircle: (originalRadius != 0)
                         }).animate({
                             latitude: messages[i].loc[1],
                             longitude: messages[i].loc[0],
-                            radius: messages[i].loc_found ? 0 : deltaToMeters(4*messages[i].loc_covariance, originalLatitude)
+//                            radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance, originalLatitude)
                         }, {
                             duration: 1000,
-                            easing: 'linear',
                             step: function() {
                                 var myLatlng = new google.maps.LatLng(this.latitude, this.longitude);
                                 this.marker.setPosition(myLatlng);
-                                if (this.animateCircle) {
-                                    this.circle.setCenter(myLatlng);
-                                    this.circle.setRadius(this.radius);
-                                }
+//                                if (this.animateCircle) {
+//                                    this.circle.setCenter(myLatlng);
+//                                    this.circle.setRadius(this.radius);
+//                                }
                             }
                         });
                     } else {
@@ -228,26 +227,26 @@
                                 position: myLatlng,
                                 map: map,
                                 title: messages[i].message,
-                                icon: {
-                                    path: google.maps.SymbolPath.CIRCLE,
-                                    scale: 10,
-                                    strokeColor: '#FFFFFF',
-                                    strokeWeight: 3,
-                                    fillColor: 'green',
-                                    fillOpacity: 1,
-                                    strokeOpacity: 0.8
-                                }
+//                                icon: {
+//                                    path: google.maps.SymbolPath.CIRCLE,
+//                                    scale: 10,
+//                                    strokeColor: '#FFFFFF',
+//                                    strokeWeight: 3,
+//                                    fillColor: 'green',
+//                                    fillOpacity: 1,
+//                                    strokeOpacity: 0.8
+//                                }
                             }),
-                            circle: new google.maps.Circle({
-                                strokeColor: '#FF0000',
-                                strokeOpacity: 0.8,
-                                strokeWeight: 2,
-                                fillColor: '#FF0000',
-                                fillOpacity: 0.35,
-                                map: map,
-                                center: myLatlng,
-                                radius: messages[i].loc_found ? 0 : deltaToMeters(4*messages[i].loc_covariance, messages[i].loc[1])
-                            })
+//                            circle: new google.maps.Circle({
+//                                strokeColor: '#FF0000',
+//                                strokeOpacity: 0.8,
+//                                strokeWeight: 2,
+//                                fillColor: '#FF0000',
+//                                fillOpacity: 0.35,
+//                                map: map,
+//                                center: myLatlng,
+//                                radius: messages[i].loc_found ? 0 : deltaToMeters(messages[i].loc_covariance, messages[i].loc[1])
+//                            })
                         };
                     }
                 }
@@ -274,7 +273,7 @@
             });
         }
 
-        heatmap();
+//        heatmap();
 
         setInterval(function() {
             refresh();
