@@ -14,7 +14,7 @@
         var map;
         var markers = {};
         var lastUpdated = Date.now();
-        var schools;
+        var schools = {};
 
         var mapStyle = [
             {
@@ -169,7 +169,9 @@
                     mapOptions);
 
             $.getJSON('/schools.json', function(data) {
-                schools = data;
+                for (var i=0; i<data.length; i++) {
+                    schools[data[i].name] = data[i];
+                }
                 var socket = io();
                 socket.on('messages', function(messages) {
                     refresh(messages);
@@ -235,15 +237,15 @@
                             position: myLatlng,
                             map: map,
                             title: messages[i].message,
-//                                icon: {
-//                                    path: google.maps.SymbolPath.CIRCLE,
-//                                    scale: 10,
-//                                    strokeColor: '#FFFFFF',
-//                                    strokeWeight: 3,
-//                                    fillColor: 'green',
-//                                    fillOpacity: 1,
-//                                    strokeOpacity: 0.8
-//                                }
+                                icon: {
+                                    path: google.maps.SymbolPath.CIRCLE,
+                                    scale: 10,
+                                    strokeColor: '#000000',
+                                    strokeWeight: 1,
+                                    fillColor: getSchoolColor(messages[i].schoolName),
+                                    fillOpacity: 1,
+                                    strokeOpacity: 1
+                                }
                         }),
 //                            circle: new google.maps.Circle({
 //                                strokeColor: '#FF0000',
@@ -258,6 +260,10 @@
                     };
                 }
             }
+        }
+
+        function getSchoolColor(schoolName) {
+            return "rgb(" + schools[schoolName].color[0] + "," + schools[schoolName].color[1] + "," + schools[schoolName].color[2] + ")";
         }
 
         function heatmap() {
