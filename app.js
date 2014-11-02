@@ -4,7 +4,7 @@ var https = require('https');
 var async = require('async');
 var _ = require('lodash');
 var d3 = require('d3');
-var d3cloud = require('d3-cloud');
+var d3cloud = require('d3.layout.cloud');
 
 //var favicon = require('serve-favicon');
 //var logger = require('morgan');
